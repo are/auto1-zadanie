@@ -1,21 +1,17 @@
 import { css, Global, jsx } from '@emotion/core'
+import { Router } from '@reach/router'
+import { Fragment } from 'react'
 
-const globalStyles = css`
-    html, body, div {
-        margin: 0;
-        padding: 0;
-
-        box-sizing: border-box;
-    }
-
-    body {
-        font-family: monospace;
-    }
-`
+import { MerchantListView } from './views/merchantList/MerchantListView'
+import { globalStyles } from './App.styles'
 
 export const App = () => {
-    return <div>
-        <Global styles={globalStyles} />
-        
-    </div>
+    return (
+        <Fragment>
+            <Global styles={globalStyles} />
+            <Router>
+                <MerchantListView path="/" />
+            </Router>
+        </Fragment>
+    )
 }
