@@ -15,6 +15,10 @@ export const listElementStyles = css`
     }
 
     cursor: pointer;
+
+    &:hover {
+        background: rgba(245, 245, 245, 1);
+    }
 `
 
 export const avatarStyles = css`

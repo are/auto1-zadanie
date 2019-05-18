@@ -1,11 +1,12 @@
 import { jsx } from '@emotion/core'
-import { Router, RouteComponentProps } from '@reach/router'
+import { RouteComponentProps } from '@reach/router'
 import { connect } from 'react-redux'
-import { useEffect } from 'react'
+import { useEffect, useCallback, ChangeEvent } from 'react'
 
 import { AppState, Merchant } from 'src/types'
-import { containerStyles, headerStyles } from './MerchantView.styles'
-import { fetchMerchants } from '../merchantList/MerchantListView.actions'
+import { containerStyles, headerStyles, contentStyles } from './MerchantView.styles'
+import { editMerchant, fetchMerchants, deleteMerchant, fetchMerchant } from '../merchantList/MerchantListView.actions'
+import { EditableField } from 'src/components/EditableField/EditableField'
 
 type MerchantViewOwnProps = {}
 
@@ -13,10 +14,13 @@ type MerchantViewRouterProps = RouteComponentProps<{ merchantId: string }>
 
 type MerchantViewStateProps = {
     merchant: Merchant
+    isLoading: boolean
 }
 
 type MerchantViewDispatchProps = {
-    fetchMerchants: () => void
+    fetchMerchant: (id: string) => void
+    editMerchant: (id: string, merchant: Partial<Merchant>) => void
+    deleteMerchant: (id: string) => void
 }
 
 type MerchantViewProps = MerchantViewOwnProps &
@@ -24,11 +28,70 @@ type MerchantViewProps = MerchantViewOwnProps &
     MerchantViewStateProps &
     MerchantViewDispatchProps
 
-export const MerchantViewComponent = ({ merchant, fetchMerchants }: MerchantViewProps) => {
+export const MerchantViewComponent = ({
+    merchant,
+    merchantId,
+    editMerchant,
+    fetchMerchant,
+    isLoading,
+    deleteMerchant,
+}: MerchantViewProps) => {
     useEffect(() => {
-        if (!merchant) {
-            fetchMerchants()
-        }
+        fetchMerchant(merchantId)
+    }, [merchantId])
+
+    const handleEmailChange = useCallback(
+        (email: string) => {
+            editMerchant(merchant.id, {
+                email,
+            })
+        },
+        [merchant],
+    )
+
+    const handlePhoneChange = useCallback(
+        (phone: string) => {
+            editMerchant(merchant.id, {
+                phone,
+            })
+        },
+        [merchant],
+    )
+
+    const handleAvatarChange = useCallback(
+        (avatarUrl: string) => {
+            editMerchant(merchant.id, {
+                avatarUrl,
+            })
+        },
+        [merchant],
+    )
+
+    const handleNameChange = useCallback(
+        (name: string) => {
+            const [firstname, lastname] = name.split(' ')
+
+            editMerchant(merchant.id, {
+                firstname: firstname || '',
+                lastname: lastname || '',
+            })
+        },
+        [merchant],
+    )
+
+    const handlePremiumChange = useCallback(
+        (event: ChangeEvent<HTMLInputElement>) => {
+            editMerchant(merchant.id, {
+                hasPremium: event.currentTarget.checked,
+            })
+        },
+        [merchant],
+    )
+
+    const handleDeleteMerchant = useCallback(() => {
+        deleteMerchant(merchant.id)
+
+        history.back()
     }, [merchant])
 
     if (!merchant) {
@@ -40,12 +103,36 @@ export const MerchantViewComponent = ({ merchant, fetchMerchants }: MerchantView
             <div css={headerStyles}>
                 <img src={merchant.avatarUrl} />
                 <h3>
-                    {merchant.firstname} {merchant.lastname}
+                    <EditableField
+                        disabled={isLoading}
+                        value={merchant.firstname + ' ' + merchant.lastname}
+                        onChange={handleNameChange}
+                    />
                 </h3>
+                <span />
+                <p>{isLoading ? 'Saving... 💾' : ''}</p>
             </div>
-            <div>
-                <p>email: {merchant.email}</p>
-                <p>phone: {merchant.phone}</p>
+            <div css={contentStyles}>
+                <div>
+                    email: <EditableField disabled={isLoading} value={merchant.email} onChange={handleEmailChange} />
+                </div>
+
+                <div>
+                    phone: <EditableField disabled={isLoading} value={merchant.phone} onChange={handlePhoneChange} />
+                </div>
+
+                <div>
+                    premium: <input type="checkbox" onChange={handlePremiumChange} checked={merchant.hasPremium} />
+                </div>
+
+                <div>
+                    avatarUrl:{' '}
+                    <EditableField disabled={isLoading} value={merchant.avatarUrl} onChange={handleAvatarChange} />
+                </div>
+
+                <div>
+                    <button onClick={handleDeleteMerchant}>delete merchant</button>
+                </div>
             </div>
         </div>
     )
@@ -53,10 +140,13 @@ export const MerchantViewComponent = ({ merchant, fetchMerchants }: MerchantView
 
 const mapStateToProps = (state: AppState, ownProps: MerchantViewRouterProps) => ({
     merchant: state.merchantList.merchants.find(({ id }) => id === ownProps.merchantId),
+    isLoading: state.merchantList.fetching.includes(ownProps.merchantId),
 })
 
 const mapDispatchToProps = {
-    fetchMerchants,
+    fetchMerchant,
+    editMerchant,
+    deleteMerchant,
 }
 
 export const MerchantView = connect(

@@ -1,7 +1,7 @@
 import { jsx } from '@emotion/core'
 import { useEffect, useState, useCallback } from 'react'
 import { connect } from 'react-redux'
-import { navigate, RouteComponentProps } from '@reach/router'
+import { navigate, RouteComponentProps, Link } from '@reach/router'
 
 import { State } from 'src/reducer'
 import { Merchant } from 'src/types'
@@ -70,15 +70,19 @@ export const MerchantListViewComponent = ({ merchants, pageId, fetchMerchants }:
     }, [])
 
     return (
-        <PaginatedList<Merchant>
-            rows={merchants}
-            rowsPerPage={rowsPerPage}
-            pageNumber={currentPage}
-            onPreviousPageClick={handlePreviousPageClick}
-            onNextPageClick={handleNextPageClick}
-            onRowClick={handleRowClick}
-            renderRow={ListElement}
-        />
+        <div>
+            <PaginatedList<Merchant>
+                rows={merchants}
+                rowsPerPage={rowsPerPage}
+                pageNumber={currentPage}
+                onPreviousPageClick={handlePreviousPageClick}
+                onNextPageClick={handleNextPageClick}
+                onRowClick={handleRowClick}
+                renderRow={ListElement}
+            />
+
+            <Link to="/add-merchant">Add merchant</Link>
+        </div>
     )
 }
 

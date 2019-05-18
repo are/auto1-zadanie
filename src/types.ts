@@ -1,4 +1,6 @@
 import { State } from './reducer'
+import { ActionCreator } from 'redux'
+import { ThunkAction, ThunkDispatch } from 'redux-thunk'
 
 export type Bid = {
     id: string
@@ -27,3 +29,6 @@ export interface AppActionWithPayload<T, P> extends AppAction<T> {
 }
 
 export type AppState = State
+
+export type AsyncAction<T extends AppAction<any>> = ActionCreator<ThunkAction<Promise<void>, State, void, T>>
+export type AsyncDispatch<T extends AppAction<any>> = ThunkDispatch<AppState, void, T>

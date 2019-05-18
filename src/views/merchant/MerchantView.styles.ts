@@ -20,4 +20,20 @@ export const headerStyles = css`
     & > h3 {
         font-size: 22px;
     }
+
+    & > span {
+        flex-grow: 1;
+    }
+
+    & > p {
+    }
+`
+
+export const contentStyles = css`
+    display: flex;
+    flex-direction: column;
+
+    & > div {
+        width: 100%;
+    }
 `
