@@ -1,0 +1,37 @@
+{
+  "name": "auto1-zadanie",
+  "version": "1.0.0",
+  "description": "Recruitment tast for AUTO1",
+  "main": "index.html",
+  "scripts": {
+    "start": "parcel index.html",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/are1000/auto1-zadanie.git"
+  },
+  "author": "Artur Wojciechowski <me@iama.re>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/are1000/auto1-zadanie/issues"
+  },
+  "homepage": "https://github.com/are1000/auto1-zadanie#readme",
+  "devDependencies": {
+    "@types/jest": "^24.0.13",
+    "@types/react": "^16.8.17",
+    "@types/react-dom": "^16.8.4",
+    "babel-jest": "^24.8.0",
+    "jest": "^24.8.0",
+    "parcel-bundler": "^1.12.3",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "@emotion/core": "^10.0.10",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "react-redux": "^7.0.3",
+    "redux": "^4.0.1"
+  }
+}
