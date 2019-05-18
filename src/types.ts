@@ -1,3 +1,5 @@
+import { State } from './reducer'
+
 export type Bid = {
     id: string
     carTitle: string
@@ -23,3 +25,5 @@ export type AppAction<T> = {
 export interface AppActionWithPayload<T, P> extends AppAction<T> {
     payload: P
 }
+
+export type AppState = State

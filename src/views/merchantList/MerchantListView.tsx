@@ -1,16 +1,17 @@
 import { jsx } from '@emotion/core'
 import { useEffect, useState, useCallback } from 'react'
 import { connect } from 'react-redux'
+import { navigate, RouteComponentProps } from '@reach/router'
 
 import { State } from 'src/reducer'
 import { Merchant } from 'src/types'
 import { fetchMerchants } from './MerchantListView.actions'
 import { PaginatedList } from 'src/components/PaginatedList/PaginatedList'
-import { listElementStyles } from './MerchantListView.styles'
+import { listElementStyles, avatarStyles, spacerStyles, premiumLabelStyles } from './MerchantListView.styles'
 
-type MerchantListViewOwnProps = {
-    path: string
-}
+type MerchantListViewOwnProps = {}
+
+type MerchantListViewRouterProps = RouteComponentProps<{ pageId }>
 
 type MerchantListViewStateProps = {
     merchants: Array<Merchant>
@@ -20,37 +21,48 @@ type MerchantListViewDispatchProps = {
     fetchMerchants: () => void
 }
 
-type MerchantListViewProps = MerchantListViewStateProps & MerchantListViewOwnProps & MerchantListViewDispatchProps
+type MerchantListViewProps = MerchantListViewStateProps &
+    MerchantListViewOwnProps &
+    MerchantListViewDispatchProps &
+    MerchantListViewRouterProps
 
-export const ListElement = ({ id, firstname }: Merchant) => {
+export const ListElement = (row: Merchant, handleClick: (row: Merchant) => void) => {
     return (
-        <div key={id} css={listElementStyles}>
-            {firstname}
+        <div key={row.id} css={listElementStyles} onClick={() => handleClick(row)}>
+            <img css={avatarStyles} src={row.avatarUrl} />
+            <span>
+                {row.firstname} {row.lastname}
+            </span>
+            <span css={spacerStyles} />
+            <span>
+                {row.hasPremium && <span css={premiumLabelStyles}>Premium</span>}
+                {row.bids.length} bids
+            </span>
         </div>
     )
 }
 
-export const MerchantListViewComponent = ({ path, merchants, fetchMerchants }: MerchantListViewProps) => {
+export const MerchantListViewComponent = ({ merchants, pageId, fetchMerchants }: MerchantListViewProps) => {
     const rowsPerPage = 10
-    const [currentPage, setCurrentPage] = useState(0)
+    const currentPage = isNaN(Number(pageId)) ? 0 : Number(pageId)
 
     const handlePreviousPageClick = useCallback((currentPage: number) => {
         if (currentPage > 0) {
-            setCurrentPage(currentPage - 1)
+            navigate(`/page/${currentPage - 1}`)
         }
     }, [])
 
     const handleNextPageClick = useCallback(
         (currentPage: number) => {
-            if (currentPage < Math.floor(merchants.length / rowsPerPage)) {
-                setCurrentPage(currentPage + 1)
+            if (currentPage < Math.ceil(merchants.length / rowsPerPage)) {
+                navigate(`/page/${currentPage + 1}`)
             }
         },
         [merchants],
     )
 
-    const handlePageClick = useCallback((pageNumber: number) => {
-        setCurrentPage(pageNumber)
+    const handleRowClick = useCallback((row: Merchant) => {
+        navigate(`/merchant/${row.id}`)
     }, [])
 
     useEffect(() => {
@@ -64,6 +76,7 @@ export const MerchantListViewComponent = ({ path, merchants, fetchMerchants }: M
             pageNumber={currentPage}
             onPreviousPageClick={handlePreviousPageClick}
             onNextPageClick={handleNextPageClick}
+            onRowClick={handleRowClick}
             renderRow={ListElement}
         />
     )

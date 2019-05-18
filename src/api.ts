@@ -1,6 +1,8 @@
-import { name, phone, image, internet, random, date } from 'faker'
+import { seed, name, phone, image, internet, random, date } from 'faker'
 
 import { Merchant, Bid } from './types'
+
+seed(1234)
 
 // This is a fake api. It mimics what a real api could look like.
 
@@ -39,14 +41,14 @@ export const createMerchant = (): Merchant => ({
     id: random.uuid(),
     firstname: name.firstName(),
     lastname: name.lastName(),
-    avatarUrl: image.imageUrl(),
+    avatarUrl: image.avatar(),
     email: internet.email(),
     phone: phone.phoneNumber(),
     hasPremium: random.boolean(),
     bids: Array.from(Array(random.number(5)), () => createBid()),
 })
 
-const merchantList: unknown = Array.from(Array(random.number(50)), () => createMerchant())
+const merchantList: unknown = Array.from(Array(1001), () => createMerchant())
 
 export const get = <T extends any>(type: string): Promise<T> => {
     const deferred = defer<T>()
