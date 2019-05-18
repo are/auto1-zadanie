@@ -3,15 +3,15 @@ import { Router } from '@reach/router'
 import { Fragment } from 'react'
 
 import { MerchantListView } from './views/merchantList/MerchantListView'
-import { globalStyles } from './App.styles'
+import { globalStyles, containerStyles } from './App.styles'
 
 export const App = () => {
     return (
-        <Fragment>
+        <div css={containerStyles}>
             <Global styles={globalStyles} />
             <Router>
                 <MerchantListView path="/" />
             </Router>
-        </Fragment>
+        </div>
     )
 }

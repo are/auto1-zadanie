@@ -15,3 +15,11 @@ export type Merchant = {
     hasPremium: boolean
     bids: Array<Bid>
 }
+
+export type AppAction<T> = {
+    type: T
+}
+
+export interface AppActionWithPayload<T, P> extends AppAction<T> {
+    payload: P
+}

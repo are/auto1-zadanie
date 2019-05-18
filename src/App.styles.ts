@@ -6,11 +6,13 @@ export const globalStyles = css`
     div {
         margin: 0;
         padding: 0;
-
-        box-sizing: border-box;
     }
 
     body {
         font-family: monospace;
     }
+`
+
+export const containerStyles = css`
+    width: 960px;
 `
