@@ -1,12 +1,13 @@
 import { jsx } from '@emotion/core'
-import { RouteComponentProps } from '@reach/router'
+import { RouteComponentProps, navigate, Link } from '@reach/router'
 import { connect } from 'react-redux'
 import { useEffect, useCallback, ChangeEvent } from 'react'
 
-import { AppState, Merchant } from 'src/types'
+import { AppState, Merchant, Bid } from 'src/types'
 import { containerStyles, headerStyles, contentStyles } from './MerchantView.styles'
 import { editMerchant, fetchMerchants, deleteMerchant, fetchMerchant } from '../merchantList/MerchantListView.actions'
 import { EditableField } from 'src/components/EditableField/EditableField'
+import { BidsTable } from 'src/components/BidsTable/BidsTable'
 
 type MerchantViewOwnProps = {}
 
@@ -91,8 +92,26 @@ export const MerchantViewComponent = ({
     const handleDeleteMerchant = useCallback(() => {
         deleteMerchant(merchant.id)
 
-        history.back()
+        navigate('/page/0')
     }, [merchant])
+
+    const handleDeleteBid = useCallback(
+        (bid: Bid) => {
+            editMerchant(merchant.id, {
+                bids: merchant.bids.filter(b => b.id !== bid.id),
+            })
+        },
+        [merchant],
+    )
+
+    const handleAddBid = useCallback(
+        (bid: Bid) => {
+            editMerchant(merchant.id, {
+                bids: [...merchant.bids, bid],
+            })
+        },
+        [merchant],
+    )
 
     if (!merchant) {
         return <div css={containerStyles}>Loading...</div>
@@ -100,6 +119,7 @@ export const MerchantViewComponent = ({
 
     return (
         <div css={containerStyles}>
+            <Link to="/page/0">Home</Link>
             <div css={headerStyles}>
                 <img src={merchant.avatarUrl} />
                 <h3>
@@ -110,7 +130,7 @@ export const MerchantViewComponent = ({
                     />
                 </h3>
                 <span />
-                <p>{isLoading ? 'Saving... 💾' : ''}</p>
+                <p>{isLoading ? 'Loading... 💾' : ''}</p>
             </div>
             <div css={contentStyles}>
                 <div>
@@ -128,6 +148,10 @@ export const MerchantViewComponent = ({
                 <div>
                     avatarUrl:{' '}
                     <EditableField disabled={isLoading} value={merchant.avatarUrl} onChange={handleAvatarChange} />
+                </div>
+
+                <div>
+                    <BidsTable bids={merchant.bids} onAdd={handleAddBid} onRemove={handleDeleteBid} />
                 </div>
 
                 <div>

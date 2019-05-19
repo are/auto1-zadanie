@@ -1,8 +1,5 @@
-import { seed, name, phone, image, internet, random, date } from 'faker'
-
 import { Merchant, Bid } from './types'
-
-seed(1234)
+import { data } from './data'
 
 // This is a fake api. It mimics what a real api could look like.
 
@@ -10,6 +7,15 @@ type Deferred<T> = {
     promise: Promise<T>
     reject: (error: any) => void
     resolve: (value: T) => void
+}
+
+const uuid = () => {
+    // This has been borrowed from a stack overflow answer
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (Math.random() * 16) | 0,
+            v = c == 'x' ? r : (r & 0x3) | 0x8
+        return v.toString(16)
+    })
 }
 
 const defer = <T extends any>(): Deferred<T> => {
@@ -30,25 +36,7 @@ const defer = <T extends any>(): Deferred<T> => {
 
 export const randomFloat = (min: number, max: number) => Math.random() * (max - min) + min
 
-export const createBid = (): Bid => ({
-    id: random.uuid(),
-    carTitle: random.word(),
-    amount: random.number(),
-    created: date.past().toLocaleString(),
-})
-
-export const createMerchant = (): Merchant => ({
-    id: random.uuid(),
-    firstname: name.firstName(),
-    lastname: name.lastName(),
-    avatarUrl: image.avatar(),
-    email: internet.email(),
-    phone: phone.phoneNumber(),
-    hasPremium: random.boolean(),
-    bids: Array.from(Array(random.number(5)), () => createBid()),
-})
-
-let merchantList: Array<Merchant> = Array.from(Array(1001), () => createMerchant())
+let merchantList: Array<Merchant> = data
 
 export const get = <T extends any>(type: string, id?: string): Promise<T> => {
     const deferred = defer<T>()
@@ -79,8 +67,28 @@ export const patch = <I, O>(type: string, id: string, data: I): Promise<O> => {
 
     switch (type) {
         case 'patchMerchant':
+            const iMerchant = (data as unknown) as Partial<Merchant>
             const idx = merchantList.findIndex(merchant => merchant.id === id)
-            const newMerchant = { ...merchantList[idx], ...data }
+            const newMerchant = {
+                ...merchantList[idx],
+                ...iMerchant,
+                ...(iMerchant.bids
+                    ? {
+                          bids: [
+                              ...iMerchant.bids.map(bid => {
+                                  if (bid.id) {
+                                      return bid
+                                  }
+
+                                  return {
+                                      ...bid,
+                                      id: uuid(),
+                                  }
+                              }),
+                          ],
+                      }
+                    : {}),
+            }
 
             merchantList = [...merchantList.slice(0, idx), newMerchant, ...merchantList.slice(idx + 1)]
 
@@ -102,7 +110,7 @@ export const post = <I, O>(type: string, data: I): Promise<O> => {
 
     switch (type) {
         case 'addMerchant':
-            const id = random.uuid()
+            const id = uuid()
             const merchant = { ...((data as unknown) as Merchant), id }
 
             merchantList = [merchant, ...merchantList]

@@ -1,5 +1,13 @@
 import { css } from '@emotion/core'
 
+export const containerStyles = css`
+    margin: 10px;
+`
+
+export const addMerchantStyles = css`
+    margin-bottom: 10px;
+`
+
 export const listElementStyles = css`
     display: flex;
     width: 100%;

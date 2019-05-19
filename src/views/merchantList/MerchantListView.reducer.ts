@@ -8,6 +8,8 @@ import {
     FETCH_MERCHANT_SUCCESS,
     FETCH_MERCHANT,
     DELETE_MERCHANT,
+    FETCH_MERCHANTS,
+    FETCH_MERCHANTS_FAILURE,
 } from './MerchantListView.actions'
 
 export type MerchantListViewState = {
@@ -24,10 +26,21 @@ const initialState: MerchantListViewState = {
 
 export const MerchantListViewReducer = (state = initialState, action: MerchantListViewAction) => {
     switch (action.type) {
+        case FETCH_MERCHANTS:
+            return {
+                ...state,
+                fetchingAll: true,
+            }
         case FETCH_MERCHANTS_SUCCESS:
             return {
                 ...state,
                 merchants: action.payload,
+                fetchingAll: false,
+            }
+        case FETCH_MERCHANTS_FAILURE:
+            return {
+                ...state,
+                fetchingAll: false,
             }
         case FETCH_MERCHANT:
             return {
@@ -52,6 +65,7 @@ export const MerchantListViewReducer = (state = initialState, action: MerchantLi
             return {
                 ...state,
                 merchants: [...state.merchants, action.payload],
+                fetching: [...state.fetching.filter(id => id !== action.payload.id)],
             }
         }
         case DELETE_MERCHANT: {

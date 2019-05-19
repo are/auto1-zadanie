@@ -1,8 +1,6 @@
 import { css } from '@emotion/core'
 
-export const containerStyles = css`
-    margin: 10px;
-`
+export const containerStyles = css``
 
 export const paginatorStyles = css`
     display: flexbox;

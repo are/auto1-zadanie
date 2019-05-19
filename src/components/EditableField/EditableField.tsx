@@ -2,14 +2,14 @@ import { css, jsx } from '@emotion/core'
 import { PureComponent, ChangeEvent, KeyboardEvent, createRef } from 'react'
 
 type EditableFieldProps = {
-    value: string
-    onChange: (value: string) => void
-    disabled: boolean
+    value: string | number
+    onChange: (value: string | number) => void
+    disabled?: boolean
 }
 
 type EditableFieldState = {
     editing: boolean
-    value: string
+    value: string | number
 }
 
 export class EditableField extends PureComponent<EditableFieldProps, EditableFieldState> {
@@ -63,7 +63,7 @@ export class EditableField extends PureComponent<EditableFieldProps, EditableFie
         return this.onChange(this.state.value)
     }
 
-    onChange = (value: string) => {
+    onChange = (value: string | number) => {
         if (this.props.value !== value) {
             this.props.onChange(value)
         }

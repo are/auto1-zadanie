@@ -17,7 +17,9 @@ type AddMerchantViewProps = AddMerchantViewDispatchProps & AddMerchantViewRouter
 
 const fields = ['firstname', 'lastname', 'email', 'phone', 'avatarUrl']
 export const AddMerchantViewComponent = ({ addMerchant }: AddMerchantViewProps) => {
-    const [merchant, setState] = useState<Merchant>({} as Merchant)
+    const [merchant, setState] = useState<Merchant>({
+        bids: [],
+    } as Merchant)
 
     const handleChange = useCallback(
         fieldId => (event: ChangeEvent<HTMLInputElement>) => {

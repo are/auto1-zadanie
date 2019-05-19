@@ -1,6 +1,5 @@
 import { css, Global, jsx } from '@emotion/core'
 import { Router, Redirect } from '@reach/router'
-import { Fragment } from 'react'
 
 import { MerchantListView } from './views/merchantList/MerchantListView'
 import { MerchantView } from './views/merchant/MerchantView'
@@ -13,6 +12,7 @@ export const App = () => {
             <Global styles={globalStyles} />
             <Router>
                 <Redirect from="/" to="/page/0" />
+
                 <MerchantListView path="/page/:pageId" />
                 <MerchantView path="/merchant/:merchantId" />
                 <AddMerchantView path="/add-merchant" />

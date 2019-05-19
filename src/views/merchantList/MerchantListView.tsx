@@ -1,5 +1,5 @@
 import { jsx } from '@emotion/core'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { navigate, RouteComponentProps, Link } from '@reach/router'
 
@@ -7,7 +7,14 @@ import { State } from 'src/reducer'
 import { Merchant } from 'src/types'
 import { fetchMerchants } from './MerchantListView.actions'
 import { PaginatedList } from 'src/components/PaginatedList/PaginatedList'
-import { listElementStyles, avatarStyles, spacerStyles, premiumLabelStyles } from './MerchantListView.styles'
+import {
+    listElementStyles,
+    avatarStyles,
+    spacerStyles,
+    premiumLabelStyles,
+    containerStyles,
+    addMerchantStyles,
+} from './MerchantListView.styles'
 
 type MerchantListViewOwnProps = {}
 
@@ -15,6 +22,7 @@ type MerchantListViewRouterProps = RouteComponentProps<{ pageId }>
 
 type MerchantListViewStateProps = {
     merchants: Array<Merchant>
+    isFetching: boolean
 }
 
 type MerchantListViewDispatchProps = {
@@ -42,7 +50,7 @@ export const ListElement = (row: Merchant, handleClick: (row: Merchant) => void)
     )
 }
 
-export const MerchantListViewComponent = ({ merchants, pageId, fetchMerchants }: MerchantListViewProps) => {
+export const MerchantListViewComponent = ({ merchants, pageId, fetchMerchants, isFetching }: MerchantListViewProps) => {
     const rowsPerPage = 10
     const currentPage = isNaN(Number(pageId)) ? 0 : Number(pageId)
 
@@ -70,24 +78,30 @@ export const MerchantListViewComponent = ({ merchants, pageId, fetchMerchants }:
     }, [])
 
     return (
-        <div>
-            <PaginatedList<Merchant>
-                rows={merchants}
-                rowsPerPage={rowsPerPage}
-                pageNumber={currentPage}
-                onPreviousPageClick={handlePreviousPageClick}
-                onNextPageClick={handleNextPageClick}
-                onRowClick={handleRowClick}
-                renderRow={ListElement}
-            />
-
-            <Link to="/add-merchant">Add merchant</Link>
+        <div css={containerStyles}>
+            <div css={addMerchantStyles}>
+                <Link to="/add-merchant">Add merchant</Link>
+            </div>
+            {!isFetching ? (
+                <PaginatedList<Merchant>
+                    rows={merchants}
+                    rowsPerPage={rowsPerPage}
+                    pageNumber={currentPage}
+                    onPreviousPageClick={handlePreviousPageClick}
+                    onNextPageClick={handleNextPageClick}
+                    onRowClick={handleRowClick}
+                    renderRow={ListElement}
+                />
+            ) : (
+                'Loading...'
+            )}
         </div>
     )
 }
 
 const mapStateToProps = (state: State) => ({
     merchants: state.merchantList.merchants,
+    isFetching: state.merchantList.fetchingAll,
 })
 
 const mapDispatchToProps = {
